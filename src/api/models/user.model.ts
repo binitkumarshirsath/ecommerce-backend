@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     refreshToken: {
       type: String,
-      required: true,
     },
 
     //  for password reset
@@ -62,7 +61,7 @@ const userSchema = new mongoose.Schema<IUser>(
 // hash the password before saving
 userSchema.pre("save", async function (next) {
   const salt = bcrypt.genSaltSync(12);
-  const hash = bcrypt.hashSync(this.password, salt);
+  this.password = bcrypt.hashSync(this.password, salt);
   next();
 });
 
