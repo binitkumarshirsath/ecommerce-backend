@@ -1,5 +1,8 @@
 import mongoose, { Document, Mongoose, Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { ENV_CONFIG } from "../../utils/env/env-config.js";
+
 interface IUser extends Document {
   _id: string;
   name: string;
@@ -67,6 +70,38 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.isPasswordCorrect = async function (password: string) {
   await bcrypt.compare(password, this.password);
 };
-const User = mongoose.model("User", userSchema);
+
+//generate refresh token
+userSchema.methods.generateRefreshToken = async function () {
+  const REFRESH_TOKEN_KEY = ENV_CONFIG.REFRESH_TOKEN_KEY;
+
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    REFRESH_TOKEN_KEY!,
+    {
+      expiresIn: ENV_CONFIG.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
+
+userSchema.methods.generateAccessToken = async function () {
+  const ACCESS_TOKEN_KEY = ENV_CONFIG.ACCESS_TOKEN_KEY;
+
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      role: this.role,
+    },
+    ACCESS_TOKEN_KEY!,
+    {
+      expiresIn: ENV_CONFIG.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

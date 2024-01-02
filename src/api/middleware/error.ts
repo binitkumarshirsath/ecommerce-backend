@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ErrorHandler } from "../../utils/ErrorHandler.js";
+import { ApiError } from "../../utils/ErrorHandler.js";
 const errorMiddleware = async (
-  err: ErrorHandler,
+  err: ApiError,
   req: Request,
   res: Response,
   next: NextFunction
