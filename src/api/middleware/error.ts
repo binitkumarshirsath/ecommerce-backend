@@ -11,6 +11,7 @@ const errorMiddleware = async (
   return res.status(err.statusCode || 500).json({
     success: false,
     err: err.error,
+    stack: err.stack,
     message: err.message || "Something went wrong",
   });
 };

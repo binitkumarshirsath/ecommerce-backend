@@ -1,25 +1,19 @@
-import mongoose, { Document } from "mongoose";
-
+import mongoose, { Document, Mongoose, Schema } from "mongoose";
+import bcrypt from "bcrypt";
 interface IUser extends Document {
   _id: string;
   name: string;
   email: string;
-  gender: "male" | "female";
-  dob: Date;
   role: "admin" | "user";
+  additionalDetails: mongoose.Schema.Types.ObjectId;
   password: string;
-  avatar: string;
-
-  // age is a virtual attribute
-  age: number;
+  refreshToken: string;
+  passwordResetToken: string;
+  passwordResetTime: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
   {
-    _id: {
-      required: [true, "Id property is missing"],
-      type: String,
-    },
     name: {
       required: [true, "Name is missing"],
       type: String,
@@ -28,22 +22,32 @@ const userSchema = new mongoose.Schema<IUser>(
       required: [true, "Email is missing"],
       type: String,
     },
-    gender: {
-      enum: ["male", "female"],
-      required: true,
-      default: "male",
-      type: String,
+    additionalDetails: {
+      type: mongoose.Schema.Types.ObjectId,
+      trim: true,
+      ref: "Profile",
     },
+
     role: {
-      enum: ["admin", "user"],
+      enum: ["user", "user", "seller"],
       required: true,
       default: "user",
       type: String,
     },
-    avatar: {
+
+    password: {
       type: String,
     },
-    password: {
+    refreshToken: {
+      type: String,
+      required: true,
+    },
+
+    //  for password reset
+    passwordResetTime: {
+      type: Date,
+    },
+    passwordResetToken: {
       type: String,
     },
   },
@@ -52,23 +56,17 @@ const userSchema = new mongoose.Schema<IUser>(
   }
 );
 
-userSchema.virtual("age").get(function (this: IUser) {
-  const today = new Date();
-  const birthdate = new Date(this.dob);
-  const age = today.getFullYear() - birthdate.getFullYear();
-
-  // Adjust age if birthday hasn't occurred yet this year
-
-  if (
-    today <
-    new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate())
-  ) {
-    return age - 1;
-  }
-
-  return age;
+// hash the password before saving
+userSchema.pre("save", async function (next) {
+  const salt = bcrypt.genSaltSync(12);
+  const hash = bcrypt.hashSync(this.password, salt);
+  next();
 });
 
+// check if password is correct
+userSchema.methods.isPasswordCorrect = async function (password: string) {
+  await bcrypt.compare(password, this.password);
+};
 const User = mongoose.model("User", userSchema);
 
 export default User;
