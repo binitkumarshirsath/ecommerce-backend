@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/ErrorHandler.js";
-import { ENV_CONFIG } from "../../utils/env/env-config.js";
+import { ENV_CONFIG } from "../../config/env/env-config.js";
 import User from "../models/user.model.js";
 
 const authenticate = asyncHandler(

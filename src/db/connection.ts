@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ENV_CONFIG } from "../utils/env/env-config.js";
+import { ENV_CONFIG } from "../config/env/env-config.js";
 
 const connectDB = () => {
   const DB_URL = ENV_CONFIG.DB_URL;

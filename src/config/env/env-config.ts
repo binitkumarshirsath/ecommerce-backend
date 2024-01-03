@@ -16,6 +16,8 @@ const ENV_CONFIG = {
   REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY,
   ACCESS_TOKEN_KEY: process.env.ACCESS_TOKEN_KEY,
   ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
+  MAIL_USER: process.env.MAIL_USER,
+  MAIL_PASS: process.env.MAIL_PASS,
 };
 
 export { ENV_CONFIG };

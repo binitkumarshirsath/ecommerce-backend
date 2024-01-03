@@ -1,7 +1,7 @@
 import mongoose, { Document, Mongoose, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { ENV_CONFIG } from "../../utils/env/env-config.js";
+import { ENV_CONFIG } from "../../config/env/env-config.js";
 
 interface IUser extends Document {
   _id: string;

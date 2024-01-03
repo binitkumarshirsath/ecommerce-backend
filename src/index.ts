@@ -1,5 +1,5 @@
 import express, { urlencoded } from "express";
-import { ENV_CONFIG } from "./utils/env/env-config.js";
+import { ENV_CONFIG } from "./config/env/env-config.js";
 import { connectDB } from "./db/connection.js";
 import routes from "./api/routes/index.routes.js";
 import cors from "cors";
