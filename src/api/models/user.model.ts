@@ -13,6 +13,11 @@ interface IUser extends Document {
   refreshToken: string;
   passwordResetToken: string;
   passwordResetTime: Date;
+
+  // methods
+  isPasswordCorrect(password: string): Promise<boolean>;
+  generateRefreshToken(): Promise<string>;
+  generateAccessToken(): Promise<string>;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -67,7 +72,7 @@ userSchema.pre("save", async function (next) {
 
 // check if password is correct
 userSchema.methods.isPasswordCorrect = async function (password: string) {
-  await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password);
 };
 
 //generate refresh token
