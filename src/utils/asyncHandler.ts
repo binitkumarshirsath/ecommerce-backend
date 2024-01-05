@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 
-type ControllerType = (
-  req: Request,
+type ControllerType<T = Request> = (
+  req: T,
   res: Response,
   next: NextFunction
 ) => Promise<void>;
 
 const asyncHandler =
-  (controller: ControllerType) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  <T = Request>(controller: ControllerType<T>) =>
+  async (req: T, res: Response, next: NextFunction) => {
     try {
       await controller(req, res, next);
     } catch (err) {

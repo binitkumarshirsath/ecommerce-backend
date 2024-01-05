@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { OtpBody, UserBody } from "../../types/index.js";
+import { OtpBody, UserBody, UserRequestBody } from "../../types/index.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../../utils/ErrorHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
@@ -28,6 +28,10 @@ const sendOTP = asyncHandler(
         html: `${otp}`,
         text: "hi",
       });
+
+      res
+        .status(200)
+        .send(new ApiResponse(`OTP sent successfully to ${email}.`));
     } else {
       // resend otp and increase expiry
       const newExpiry = new Date(Date.now() + 5 * 60 * 1000);
@@ -39,6 +43,9 @@ const sendOTP = asyncHandler(
         html: `${existingOtp.otp}`,
         text: "hi",
       });
+      res
+        .status(200)
+        .send(new ApiResponse(`OTP re-sent successfully to ${email}.`));
     }
   }
 );
@@ -58,7 +65,7 @@ const signup = asyncHandler(
     // verify otp
     const existingOtp = await Otp.findOne({ email });
     if (!existingOtp) {
-      throw new ApiError("OTP expired", 400);
+      throw new ApiError("OTP expired!", 400);
     }
 
     if (existingOtp?.otp !== otp) {
@@ -117,4 +124,27 @@ const login = asyncHandler(
   }
 );
 
-export { signup, login, sendOTP };
+const getAllUsers = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const users = await User.find({});
+    res.status(201).json(new ApiResponse("All users", { users }));
+  }
+);
+
+const getUser = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params;
+    const user = await User.findById(id).select(
+      "-password -refreshToken -passwordResetTime -passwordResetToken"
+    );
+    res
+      .status(201)
+      .json(new ApiResponse("Successfully fetched user details", { user }));
+  }
+);
+
+const updateUser = asyncHandler<UserRequestBody>(
+  async (req: UserRequestBody, res: Response, next: NextFunction) => {}
+);
+
+export { signup, login, sendOTP, getAllUsers, getUser };

@@ -10,6 +10,7 @@ interface IUser extends Document {
   role: "admin" | "user";
   additionalDetails: mongoose.Schema.Types.ObjectId;
   password: string;
+  isBlocked: boolean;
   refreshToken: string;
   passwordResetToken: string;
   passwordResetTime: Date;
@@ -29,13 +30,17 @@ const userSchema = new mongoose.Schema<IUser>(
     email: {
       required: [true, "Email is missing"],
       type: String,
+      unique: true,
     },
     additionalDetails: {
       type: mongoose.Schema.Types.ObjectId,
       trim: true,
       ref: "Profile",
     },
-
+    isBlocked: {
+      default: false,
+      type: Boolean,
+    },
     role: {
       enum: ["user", "user", "seller"],
       required: true,
