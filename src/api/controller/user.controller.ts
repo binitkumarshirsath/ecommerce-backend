@@ -144,7 +144,34 @@ const getUser = asyncHandler(
 );
 
 const updateUser = asyncHandler<UserRequestBody>(
-  async (req: UserRequestBody, res: Response, next: NextFunction) => {}
+  async (req: UserRequestBody, res: Response, next: NextFunction) => {
+    const _id = req.user._id;
+    const data = req.data;
+    const updatedUser = await User.findByIdAndUpdate(
+      {
+        _id,
+      },
+      data,
+      {
+        new: true,
+      }
+    );
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse("Successfully updated user details", { updatedUser })
+      );
+  }
+);
+const deleteUser = asyncHandler<UserRequestBody>(
+  async (req: UserRequestBody, res: Response, next: NextFunction) => {
+    const _id = req.user._id;
+    const user = await User.findByIdAndDelete(_id);
+    res
+      .status(200)
+      .json(new ApiResponse("Successfully deleted user ", { user }));
+  }
 );
 
 export { signup, login, sendOTP, getAllUsers, getUser };
